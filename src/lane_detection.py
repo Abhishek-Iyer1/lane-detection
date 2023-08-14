@@ -7,20 +7,21 @@ import cv2
 train: list = pickle.load(open("data/full_CNN_train.p", 'rb'))
 test: list = pickle.load(open("data/full_CNN_labels.p", 'rb'))
 
-image = train[3000]
+image = train[200]
 
 x_size: int = image.shape[0]
 y_size: int = image.shape[1]
 channels: int = image.shape[2]
 color_thresh_img = np.array(np.copy(image))
+image_bgr = np.array(np.copy(image))
 
 gray_img = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 gray_thresh_img = np.array(np.copy(gray_img))
 
 # Converting RGB Format to BGR
-temp_channel = image[:,:,2]
-image[:,:,2] = image[:,:,0]
-image[:,:,0] = temp_channel
+temp_channel = image_bgr[:,:,2]
+image_bgr[:,:,2] = image_bgr[:,:,0]
+image_bgr[:,:,0] = temp_channel
 
 # Create area of interest
 x_top = 40
@@ -46,7 +47,7 @@ bgr_averages = (b_pixel_avg, g_pixel_avg, r_pixel_avg)
 gray_avg = sum(list(map(sum, roi_gray))) / roi_area
 
 # Set threshold values for B,G,R channels
-print(f"Averages = R: {b_pixel_avg}, G: {g_pixel_avg}, B: {r_pixel_avg}")
+# print(f"Averages = R: {b_pixel_avg}, G: {g_pixel_avg}, B: {r_pixel_avg}")
 bgr_threshold = [0,0,0]
 for avg, i in list(zip(bgr_averages, range(3))):
     bgr_threshold[i] = ((255 - avg) // 3) + avg
@@ -55,7 +56,7 @@ for avg, i in list(zip(bgr_averages, range(3))):
 gray_threshold = ((255 - gray_avg) // 3) + gray_avg
 
 # Mask image where pixels are below this value
-color_threshold_mask = (image[:,:,0] < bgr_threshold[0]) | (image[:,:,1] < bgr_threshold[1]) | (image[:,:,2] < bgr_threshold[2])
+color_threshold_mask = (image_bgr[:,:,0] < bgr_threshold[0]) | (image_bgr[:,:,1] < bgr_threshold[1]) | (image_bgr[:,:,2] < bgr_threshold[2])
 color_thresh_img[color_threshold_mask] = [0,0,0]
 color_thresh_img *= roi_mask
 
@@ -65,6 +66,10 @@ gray_thresh_img *= roi_mask_gray
 
 # print(f"color thresh img: {color_thresh_img}, roi mask: {roi_mask}")
 
-print(f"Thresholds = R: {bgr_threshold[0]}, G: {bgr_threshold[1]}, B: {bgr_threshold[2]}")
-plt.imshow(gray_thresh_img)
-plt.show()
+# print(f"Thresholds = R: {bgr_threshold[0]}, G: {bgr_threshold[1]}, B: {bgr_threshold[2]}")
+
+kernel_size = 5
+blur_gray = cv2.GaussianBlur(gray_img, (kernel_size, kernel_size), 0)
+low_threshold = 100
+high_threshold = 180
+edges = cv2.Canny(blur_gray, low_threshold, high_threshold)
