@@ -14,3 +14,4 @@ In this repository, we are aiming to explore traditional and smart ways to segme
 * Can explore lightweight segmentation models if performance is lacking
   * UNET
   * FPN
+  * Different backbones such as VGG 16, Resnet-50, EfficientNet, Vision transformers
