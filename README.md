@@ -12,3 +12,5 @@ In this repository, we are aiming to explore traditional and smart ways to segme
 ## Deep Learning Pipeline
 * Create and train a simple CNN model for performing real-time segmentation of lanes
 * Can explore lightweight segmentation models if performance is lacking
+  * UNET
+  * FPN
