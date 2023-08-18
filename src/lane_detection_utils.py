@@ -116,3 +116,22 @@ def hough_lines(image, rho, theta, thresh, min_line_len, max_line_gap):
     line_img = calculate_poly(line_img,lines)
     return line_img
 
+def weighted_img(img, initial_img, alpha=0.1, beta=1., gamma=0):
+    """    
+    The result image is computed as follows:
+    
+    initial_image * alpha + image * beta + gamma (initial_image and image should be the same shape)
+    """
+    print(f"Applying weighted image...")
+    lines_edges = cv2.addWeighted(initial_img, alpha, img, beta, gamma)
+    return lines_edges
+
+def get_vertices(image):
+    rows, cols = image.shape[:2]
+    bottom_left  = [cols*0.15, rows]
+    top_left     = [cols*0.45, rows*0.6]
+    bottom_right = [cols*0.95, rows]
+    top_right    = [cols*0.55, rows*0.6] 
+    
+    ver = np.array([[bottom_left, top_left, top_right, bottom_right]], dtype=np.int32)
+    return ver
