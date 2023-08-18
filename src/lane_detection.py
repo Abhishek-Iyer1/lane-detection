@@ -1,8 +1,9 @@
 import pickle
 import matplotlib.pyplot as plt
 import numpy as np
-import typing
 import cv2
+import typing
+
 
 train: list = pickle.load(open("data/full_CNN_train.p", 'rb'))
 test: list = pickle.load(open("data/full_CNN_labels.p", 'rb'))
@@ -15,7 +16,7 @@ channels: int = image.shape[2]
 color_thresh_img = np.array(np.copy(image))
 image_bgr = np.array(np.copy(image))
 
-gray_img = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+gray_img = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
 gray_thresh_img = np.array(np.copy(gray_img))
 
 # Converting RGB Format to BGR
