@@ -106,3 +106,13 @@ def calculate_poly(image,lines):
     cv2.fillPoly(image_copy, pts = np.array([poly_vertices],'int32'), color = (0,255,0))
     return cv2.addWeighted(image, 0.6, image_copy, 0.4, 0)
 
+def hough_lines(image, rho, theta, thresh, min_line_len, max_line_gap):
+    """        
+    Returns an image with hough lines drawn.
+    """
+    print(f"Drawing hough lines...")
+    lines = cv2.HoughLinesP(image, rho, theta, thresh, np.array([]), minLineLength=min_line_len, maxLineGap=max_line_gap)
+    line_img = np.zeros((image.shape[0], image.shape[1], 3), dtype=np.uint8)
+    line_img = calculate_poly(line_img,lines)
+    return line_img
+
