@@ -7,3 +7,7 @@ def grayscale(img):
     print(f"Applying Grayscale...")
     return cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
 
+def gaussian_blur(image, kernel_size):
+    """Applies a Gaussian Noise kernel"""
+    print(f"Applying Gaussian Blur...")
+    return cv2.GaussianBlur(image, (kernel_size, kernel_size), 0)
