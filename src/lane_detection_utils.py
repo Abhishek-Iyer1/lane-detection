@@ -50,62 +50,6 @@ def draw_lines(image, lines, color=[255, 0, 0], thickness=3):
         for x1,y1,x2,y2 in line:
             cv2.line(image, (x1, y1), (x2, y2), color, thickness)
 
-def calculate_poly(image,lines):
-    print(f"Calculating polygon and drawing lines...")
-    image_copy = image.copy()
-    poly_vertices = []
-    order = [0,1,3,2]
-
-    left_lines = [] # Positive slope (m < 0)
-    right_lines = [] # Negative slope (m >= 0)
-
-    for line in lines:
-        for x1,y1,x2,y2 in line:
-
-            if x1 == x2:
-                pass # Vertical Lines
-            else:
-                m = (y2 - y1) / (x2 - x1)
-                c = y1 - m * x1
-                print(f"m: {m}, c: {c}")
-
-                if m < 0:
-                    left_lines.append((m,c))
-                elif m >= 0:
-                    right_lines.append((m,c))
-
-    left_line = [0]
-    right_line = [0]
-
-    if len(left_lines) > 0:
-        left_line = np.mean(left_lines, axis=0)
-    
-    if len(right_lines) > 0:
-        right_line = np.mean(right_lines, axis=0)
-
-    lines = [left_line, right_line]
-    significant_lines = [line for line in lines if len(line) != 1]
-
-    for slope, intercept in significant_lines:
-
-        # Getting complete height of image in y1
-        rows, _ = image.shape[:2]
-        y1 = int(rows)
-
-        # Taking y2 upto 50% of actual height or 60% of y1
-        y2= int(rows * 0.5)
-
-        # x = (y-c)/m
-        x1=int((y1-intercept)/slope)
-        x2=int((y2-intercept)/slope)
-        poly_vertices.append((x1, y1))
-        poly_vertices.append((x2, y2))
-        draw_lines(image_copy, np.array([[[x1,y1,x2,y2]]]))
-    
-    poly_vertices = [poly_vertices[i] for i in order]
-    cv2.fillPoly(image_copy, pts = np.array([poly_vertices],'int32'), color = (0,255,0))
-    return cv2.addWeighted(image, 0.6, image_copy, 0.4, 0)
-
 def hough_lines(image, rho, theta, thresh, min_line_len, max_line_gap):
     """        
     Returns an image with hough lines drawn.
