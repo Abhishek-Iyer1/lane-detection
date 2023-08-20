@@ -73,10 +73,10 @@ def weighted_img(line_image, initial_image, vertices, alpha=0.1, beta=1., gamma=
 
 def get_vertices(image):
     rows, cols = image.shape[:2]
-    bottom_left  = [cols*0.15, rows]
-    top_left     = [cols*0.45, rows*0.6]
-    bottom_right = [cols*0.95, rows]
-    top_right    = [cols*0.55, rows*0.6] 
+    bottom_left  = [cols*0, rows]
+    top_left     = [cols*0.35, rows*0.5]
+    bottom_right = [cols*1, rows]
+    top_right    = [cols*0.65, rows*0.5] 
     
     ver = np.array([[bottom_left, top_left, top_right, bottom_right]], dtype=np.int32)
     return ver
