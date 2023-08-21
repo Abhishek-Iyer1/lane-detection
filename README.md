@@ -9,7 +9,13 @@ In this repository, we are aiming to explore traditional and smart ways to segme
 * Using the Canny edge detection technique and tuning its parameters to get the best output within our area of interest
 * Using Hough transform to detect line segments.
 
-Images of Input, Grayscale, after Canny, after masking, and after hough transform to be added.
+## Testing performance
+* Test on test images
+* Test real-time performance by applying to a 30 FPS video
+
+## Displaying Outputs
+* Images of Input, Grayscale, after Canny, after masking, and after hough transform to be added.
+* Video stream of marked lanes
 
 ## Deep Learning Pipeline
 * Create and train a simple CNN model for performing real-time segmentation of lanes
