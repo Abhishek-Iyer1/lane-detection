@@ -14,8 +14,7 @@ In this repository, we are aiming to explore traditional and smart ways to segme
 * Test real-time performance by applying to a 30 FPS video
 
 ## Displaying Outputs
-* Images of Input, Grayscale, after Canny, after masking, and after hough transform to be added.
-* Video stream of marked lanes
+* Images of Input, Grayscale, after Canny, after masking, and after hough transform to be added for visualising the steps of the pipeline.
 
 ## Deep Learning Pipeline
 * Create and train a simple CNN model for performing real-time segmentation of lanes
