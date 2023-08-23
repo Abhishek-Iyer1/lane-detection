@@ -22,3 +22,6 @@ In this repository, we are aiming to explore traditional and smart ways to segme
   * UNET
   * FPN
   * Different backbones such as VGG 16, Resnet-50, EfficientNet, Vision transformers
+
+## Difficulties
+* The classical pipeline struggles to adjust to different times of the day, curvature in lanes, different colours of the lanes themselves.
