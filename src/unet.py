@@ -14,7 +14,7 @@ class UNET():
         3. start_filters = Set the value of the starting number of filters for the model. They will increase to 8x the starting number at the deepest layers.
 
         Returns:
-            model = Returns the built model with initialized weights which can be configured and trained.
+            None.
         """
         self.name = name
         self.input_shape = input_shape
@@ -23,7 +23,6 @@ class UNET():
         self.input_layer = Input(self.input_shape)
         self.output_layer = self.build_unet(input_layer=self.input_layer, starting_filters=self.start_filters)
         self.model = Model(self.input_layer, self.output_layer)
-        return self.model
 
     def build_unet(input_layer, starting_filters, kernel_size = (3,3)):
 
