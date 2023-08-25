@@ -106,3 +106,9 @@ class UNET():
         
         return output_layer
 
+    def print_unet_architecture(self):
+        """
+        Prints the model architecture summary.
+        """
+        self.model.summary()
+    
