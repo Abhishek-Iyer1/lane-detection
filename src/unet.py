@@ -25,3 +25,84 @@ class UNET():
         self.model = Model(self.input_layer, self.output_layer)
         return self.model
 
+    def build_unet(input_layer, starting_filters, kernel_size = (3,3)):
+
+        """
+        Description:
+            Initialises the UNET Model and returns the output layer.
+
+        Arguments:
+        1. input_layer = The input layer with the shape of the training data images.
+        2. starting_filters = Parameter to define the smallest (starting_filters * 1) and highest number (starting_filters * 16) of filters.
+
+        Returns:
+            output_layer: A layer with sigmoid activation to provide us our segmentation prediction.
+        """
+
+        # Note: the first input layer is passed as an argument
+
+        # Contraction Path Starts -----------------
+
+        # Convolutional Block 1 with 2 layers of Convolution (3x3), Max Pooling Layer and a Dropout Layer
+        conv1 = Conv2D(starting_filters * 1, kernel_size, activation="relu", padding="same")(input_layer)
+        conv1 = Conv2D(starting_filters * 1, kernel_size, activation="relu", padding="same")(conv1)
+        pool1 = MaxPooling2D((2, 2))(conv1)
+        pool1 = Dropout(0.25)(pool1)
+
+        # Convolutional Block 2 with 2 layers of Convolution (3x3), Max Pooling Layer and a Dropout Layer
+        conv2 = Conv2D(starting_filters * 2, kernel_size, activation="relu", padding="same")(pool1)
+        conv2 = Conv2D(starting_filters * 2, kernel_size, activation="relu", padding="same")(conv2)
+        pool2 = MaxPooling2D((2, 2))(conv2)
+        pool2 = Dropout(0.5)(pool2)
+
+        # Convolutional Block 3 with 2 layers of Convolution (3x3), Max Pooling Layer and a Dropout Layer
+        conv3 = Conv2D(starting_filters * 4, kernel_size, activation="relu", padding="same")(pool2)
+        conv3 = Conv2D(starting_filters * 4, kernel_size, activation="relu", padding="same")(conv3)
+        pool3 = MaxPooling2D((2, 2))(conv3)
+        pool3 = Dropout(0.5)(pool3)
+
+        # Convolutional Block 4 with 2 layers of Convolution (3x3), Max Pooling Layer and a Dropout Layer
+        conv4 = Conv2D(starting_filters * 8, kernel_size, activation="relu", padding="same")(pool3)
+        conv4 = Conv2D(starting_filters * 8, kernel_size, activation="relu", padding="same")(conv4)
+        pool4 = MaxPooling2D((2, 2))(conv4)
+        pool4 = Dropout(0.5)(pool4)
+
+        # Middle Convolutional Block with 2 layers of Convolution (3x3) 
+        convm = Conv2D(starting_filters * 16, kernel_size, activation="relu", padding="same")(pool4)
+        convm = Conv2D(starting_filters * 16, kernel_size, activation="relu", padding="same")(convm)
+        
+        # Expansion Path Starts -----------------
+
+        # Upconvolutional Block 4 with Up Convolution, Skip connection (4), Dropout layer, and 2 Convolutional Layers
+        deconv4 = Conv2DTranspose(starting_filters * 8, kernel_size, strides=(2, 2), padding="same")(convm)
+        uconv4 = concatenate([deconv4, conv4]) # Skip connection from 4th convolutional block
+        uconv4 = Dropout(0.5)(uconv4)
+        uconv4 = Conv2D(starting_filters * 8, kernel_size, activation="relu", padding="same")(uconv4)
+        uconv4 = Conv2D(starting_filters * 8, kernel_size, activation="relu", padding="same")(uconv4)
+        
+         # Upconvolutional Block 3 with Up Convolution, Skip connection (3), Dropout layer, and 2 Convolutional Layers
+        deconv3 = Conv2DTranspose(starting_filters * 4, kernel_size, strides=(2, 2), padding="same")(uconv4)
+        uconv3 = concatenate([deconv3, conv3]) # Skip connection from 3rd convolutional block
+        uconv3 = Dropout(0.5)(uconv3)
+        uconv3 = Conv2D(starting_filters * 4, kernel_size, activation="relu", padding="same")(uconv3)
+        uconv3 = Conv2D(starting_filters * 4, kernel_size, activation="relu", padding="same")(uconv3)
+
+        # Upconvolutional Block 2 with Up Convolution, Skip connection (2), Dropout layer, and 2 Convolutional Layers
+        deconv2 = Conv2DTranspose(starting_filters * 2, kernel_size, strides=(2, 2), padding="same")(uconv3)
+        uconv2 = concatenate([deconv2, conv2]) # Skip connection from 2nd convolutional block
+        uconv2 = Dropout(0.5)(uconv2)
+        uconv2 = Conv2D(starting_filters * 2, kernel_size, activation="relu", padding="same")(uconv2)
+        uconv2 = Conv2D(starting_filters * 2, kernel_size, activation="relu", padding="same")(uconv2)
+
+        # Upconvolutional Block 1 with Up Convolution, Skip connection (1), Dropout layer, and 2 Convolutional Layers
+        deconv1 = Conv2DTranspose(starting_filters * 1, kernel_size, strides=(2, 2), padding="same")(uconv2)
+        uconv1 = concatenate([deconv1, conv1]) # Skip connection from 1st convolutional block
+        uconv1 = Dropout(0.5)(uconv1)
+        uconv1 = Conv2D(starting_filters * 1, kernel_size, activation="relu", padding="same")(uconv1)
+        uconv1 = Conv2D(starting_filters * 1, kernel_size, activation="relu", padding="same")(uconv1)
+        
+        # Final Output layer with Sigmoid activation to provide us a segmentation map
+        output_layer = Conv2D(1, (1,1), padding="same", activation="sigmoid")(uconv1)
+        
+        return output_layer
+
