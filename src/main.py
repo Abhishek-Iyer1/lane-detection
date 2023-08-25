@@ -12,7 +12,7 @@ def main():
     image = train[int(sys.argv[1])]
 
     # Run lane detection pipeline on the image
-    images = lane_detection_pipeline(image)
+    images = lane_detection_pipeline_opencv(image)
 
     # Add the ground truth image to the list of images
     images.append(("Test Label", test[int(sys.argv[1])]))
@@ -30,7 +30,7 @@ def main():
     plt.show()
 
 # Lane finding Pipeline
-def lane_detection_pipeline(image):
+def lane_detection_pipeline_opencv(image):
     
     gray_image = grayscale(image)
     smoothed_image = gaussian_blur(image = gray_image, kernel_size = 5)
