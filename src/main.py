@@ -47,7 +47,7 @@ def main():
 
 def train_model(model: UNET, x_data: list, y_data: list):
     
-    test_output = train_test_split(np.array(x_data).reshape(-1, 80, 160, 3), np.array(y_data).reshape(-1, 80, 160, 1), train_size=0.8, test_size=0.2)
+    x_train, x_test, y_train, y_test = train_test_split(np.array(x_data).reshape(-1, 80, 160, 3), np.array(y_data).reshape(-1, 80, 160, 1), train_size=0.8, test_size=0.2)
     # x_train = 
     # y_train = 
     # validation_data = 
@@ -59,7 +59,7 @@ def train_model(model: UNET, x_data: list, y_data: list):
     batch_size = 32
     epochs = 200
     callbacks = [early_stopping, model_checkpoint, reduce_lr]
-
+    validation_data = [x_test, y_test]
     model.train_model(x_train=x_train, 
                       y_train=y_train, 
                       validation_data=validation_data, 
@@ -67,8 +67,8 @@ def train_model(model: UNET, x_data: list, y_data: list):
                       epochs=epochs, 
                       callbacks=callbacks, 
                       optimizer="adam", 
-                      loss="binary_cross_entropy", 
-                      metrics=["accuracy", "loss"])
+                      loss="binary_crossentropy", 
+                      metrics=["accuracy"])
 
 # Lane finding Pipeline
 def lane_detection_pipeline_opencv(image):
