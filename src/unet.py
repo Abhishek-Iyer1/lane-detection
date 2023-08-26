@@ -24,7 +24,7 @@ class UNET():
         self.output_layer = self.build_unet(input_layer=self.input_layer, starting_filters=self.start_filters)
         self.model = Model(self.input_layer, self.output_layer)
 
-    def build_unet(input_layer, starting_filters, kernel_size = (3,3)):
+    def build_unet(self, input_layer, starting_filters, kernel_size = (3,3)):
 
         """
         Description:
@@ -104,12 +104,6 @@ class UNET():
         output_layer = Conv2D(1, (1,1), padding="same", activation="sigmoid")(uconv1)
         
         return output_layer
-
-    def print_unet_architecture(self):
-        """
-        Prints the model architecture summary.
-        """
-        self.model.summary()
     
     def train_model(self, x_train, y_train, validation_data: list, batch_size: int, epochs: int, callbacks: list, optimizer: str="rmsprop", loss: str="binary_cross_entropy", metrics: list[str]=["accuracy"]):
         """

@@ -2,11 +2,15 @@ import sys
 import pickle
 import matplotlib.pyplot as plt
 from lane_detection_utils import *
+from unet import UNET
+from keras import Model
+from keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
+from sklearn.model_selection import train_test_split
 
 def main():
     # Load train and test data
     train: list = pickle.load(open("data/full_CNN_train.p", 'rb'))
-    test: list = pickle.load(open("data/full_CNN_labels.p", 'rb'))
+    labels: list = pickle.load(open("data/full_CNN_labels.p", 'rb'))
 
     # Find image number as given through cli from train data
     image = train[int(sys.argv[1])]
