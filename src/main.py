@@ -13,6 +13,7 @@ from sklearn.metrics import classification_report, confusion_matrix
 
 def main():
 
+    # Check for existing GPUs
     gpus = tf.config.list_physical_devices('GPU')
     if gpus:
         # Restrict TensorFlow to only allocate 1GB of memory on the first GPU
@@ -30,18 +31,19 @@ def main():
     train = np.array(pickle.load(open("data/full_CNN_train.p", 'rb')))
     labels = np.array(pickle.load(open("data/full_CNN_labels.p", 'rb')))
 
-    # Find image number as given through cli from train data
-    image = train[int(sys.argv[1])]
+    # # Find image number as given through cli from train data
+    # image = train[int(sys.argv[1])]
 
+    # Train on subset of the dataset due to memory limitations
     train = train[0:6000]
     labels = labels[0:6000]
+
     # Reshape and Normalize training data
     train = np.reshape(train, (-1, 80, 160, 3)) / 255
     labels = np.reshape(labels, (-1, 80, 160, 1)) / 255
 
+    # Generates train and test datasets from the original dataset after shuffling, splitting, and creating batches.
     train_dataset, test_dataset = prepare_dataset(train, labels, batch_size=32)
-
-    print(f"Normalized: {train.shape, labels.shape, train[60][50][50][0]}")
 
     # # Run lane detection pipeline on the image
     # images = lane_detection_pipeline_opencv(image)
@@ -75,15 +77,6 @@ def main():
     plt.imshow(output)
     plt.show()
 
-    # image = train[5]
-    # image = np.reshape(image, [1, 80, 160, 3])
-    # print(f"Image Shape: {image.shape}")
-    # output = my_unet.model.predict(image)
-    # print(f"Output: {output}")
-    # output = np.reshape(output, (80, 160, 1))
-    # plt.imshow(output)
-    # plt.show()
-
 def prepare_dataset(train: list, labels: list, train_split: float = 0.8, batch_size=32):
     num_elements = len(train)
     dataset: tf.data.Dataset = tf.data.Dataset.from_tensor_slices((tf.convert_to_tensor(train), tf.convert_to_tensor(labels)))
@@ -112,21 +105,6 @@ def train_model(model: UNET, train_dataset: tf.data.Dataset, test_dataset: tf.da
     NOTE: keras model folder saved in local directory and a weights file saved as well to save progress.
     """
 
-    # Check for GPU
-    print(tf.config.list_physical_devices('GPU'))
-    print(get_available_devices())
-
-    # tf.data.Dataset approach
-
-    # Indices approach
-    # shuffle_indices = np.random.permutation(x_data.shape[0])
-    # train_indices, valid_indices= train_test_split(shuffle_indices, test_size=0.2, random_state=42, shuffle=False)
-    # print(f"Length of Shuffle Indices: {len(shuffle_indices)}\nLength of Train Indices: {len(train_indices)}\nLength of Labels Indices: {len(valid_indices)}")
-
-    # Classic approach
-    # x_train, x_test, y_train, y_test = train_test_split(x_data, y_data, train_size=0.8, test_size=0.2)
-    # print(x_train.shape, x_test.shape, y_train.shape, y_test.shape)
-
     early_stopping = EarlyStopping(patience=10, verbose=1)
     model_checkpoint = ModelCheckpoint("./keras.model", verbose=1)
     reduce_lr = ReduceLROnPlateau(factor=0.1, patience=2, min_lr=0.00001, verbose=1)
@@ -136,7 +114,6 @@ def train_model(model: UNET, train_dataset: tf.data.Dataset, test_dataset: tf.da
     loss = "binary_crossentropy"
     optimizer="adam"
     metrics=["accuracy"]
-    # print(f"{len(x_data[train_indices]), len(x_data[valid_indices]), len(y_data[train_indices]), len(y_data[valid_indices])}")
     model.model.compile(loss=loss, optimizer=optimizer, metrics=metrics)
     if model.trainable:
         history = model.model.fit(
@@ -148,10 +125,6 @@ def train_model(model: UNET, train_dataset: tf.data.Dataset, test_dataset: tf.da
         return history
     else:
         raise ValueError (f"smodel.trainable value is {model.trainable}. Please set the value to True in order to train the model.")
-
-def get_available_devices():
-    local_device_protos = device_lib.list_local_devices()
-    return [x.name for x in local_device_protos]
 
 # Lane finding Pipeline
 def lane_detection_pipeline_opencv(image):
