@@ -6,16 +6,14 @@ import numpy as np
 from src.classical_utils import *
 from unet import UNET
 from keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
-from sklearn.model_selection import train_test_split
-from tensorflow.python.client import device_lib
-from sklearn.metrics import classification_report, confusion_matrix
-
+from keras.callbacks import History
 def main():
 
     # Check for existing GPUs
     gpus = tf.config.list_physical_devices('GPU')
     if gpus:
-        # Restrict TensorFlow to only allocate 1GB of memory on the first GPU
+        # Restrict TensorFlow to only allocate 15GB of memory on the first GPU. 
+        # NOTE: Change this limit to suit your GPU if you have one
         try:
             tf.config.set_logical_device_configuration(
                 gpus[0],
@@ -42,10 +40,15 @@ def main():
     train_dataset, test_dataset = prepare_dataset(train, labels, batch_size=32)
 
     # Training
-    # my_unet = UNET(input_shape=image.shape, trainable=True, start_filters=16, name="trial unet")
-    # my_unet.model.summary()
-    # history = train_model(my_unet, train_dataset=train_dataset, test_dataset=test_dataset)
-    # my_unet.model.save_weights("unet_weights.h5")
+    my_unet = UNET(input_shape=train[0].shape, trainable=True, start_filters=16, name="trial unet")
+    my_unet.model.summary()
+    history: History = train_model(my_unet, train_dataset=train_dataset, test_dataset=test_dataset)
+
+    # Save training history for plotting graphs and further analysis
+    np.save('training_history.npy', history.history)
+
+    # Load training history as a dictionary (Uncomment to load)
+    # history=np.load('my_history.npy',allow_pickle='TRUE').item()
 
 def prepare_dataset(train: list, labels: list, train_split: float = 0.8, batch_size=32):
 
@@ -65,14 +68,23 @@ def prepare_dataset(train: list, labels: list, train_split: float = 0.8, batch_s
     """
 
     num_elements = len(train)
+
+    # Load as tf.data.Dataset
     dataset: tf.data.Dataset = tf.data.Dataset.from_tensor_slices((tf.convert_to_tensor(train), tf.convert_to_tensor(labels)))
+
+    # Shuffle the dataset to increase robustness
     dataset = dataset.shuffle(num_elements)
+    
+    # Splitting the dataset into train and test based on the split
     train_size = int(train_split * num_elements)
     test_size = num_elements - train_size
     train_dataset = dataset.skip(test_size)
     test_dataset = dataset.take(test_size)
+
+    # Creating batches for both datasets
     train_dataset = train_dataset.batch(batch_size)
     test_dataset = test_dataset.batch(1)
+
     return train_dataset, test_dataset
 
 def train_model(model: UNET, train_dataset: tf.data.Dataset, test_dataset: tf.data.Dataset):
@@ -91,17 +103,21 @@ def train_model(model: UNET, train_dataset: tf.data.Dataset, test_dataset: tf.da
         
     NOTE: keras model folder saved in local directory and a weights file saved as well to save progress.
     """
-
+    
+    # Creating callbacks to be executed while training
     early_stopping = EarlyStopping(patience=10, verbose=1)
     model_checkpoint = ModelCheckpoint("./keras.model", verbose=1)
     reduce_lr = ReduceLROnPlateau(factor=0.1, patience=2, min_lr=0.00001, verbose=1)
     
+    # Setting hyperparameters
     epochs = 200
     callbacks = [early_stopping, model_checkpoint, reduce_lr]
     loss = "binary_crossentropy"
     optimizer="adam"
     metrics=["accuracy"]
+
     model.model.compile(loss=loss, optimizer=optimizer, metrics=metrics)
+    # Training the model
     if model.trainable:
         history = model.model.fit(
                     train_dataset,
