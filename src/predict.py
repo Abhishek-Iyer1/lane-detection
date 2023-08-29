@@ -49,8 +49,20 @@ def predict_lanes():
     plt.show()
 
 def calculate_iou(y_true, y_pred):
-    # Calculate the true positives,
-    # false positives, and false negatives
+    
+    """
+    Description:
+        Calculates Intersection over Union (IoU), one of the best ways to judge segmentation performance.
+        
+    Arguments:
+    1. y_true = ground truth image
+    2. y_pred = output predicted by model
+    NOTE: Both arguments must be binarized (pixel values = 0 or 1) and must be of the same shape.
+    
+    Returns:
+    1. iou = float representing the iou value. Always between 0 and 1
+    """
+
     tp = 0
     fp = 0
     fn = 0
