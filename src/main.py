@@ -1,11 +1,10 @@
 import sys
 import pickle
-import matplotlib.pyplot as plt
 import tensorflow as tf
+import numpy as np
 
 from src.classical_utils import *
 from unet import UNET
-from keras import Model
 from keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
 from sklearn.model_selection import train_test_split
 from tensorflow.python.client import device_lib
@@ -47,14 +46,6 @@ def main():
     # my_unet.model.summary()
     # history = train_model(my_unet, train_dataset=train_dataset, test_dataset=test_dataset)
     # my_unet.model.save_weights("unet_weights.h5")
-
-    # Prediction
-    my_unet: Model = tf.keras.models.load_model('keras.model')
-    image = np.reshape(image, [1, 80, 160, 3])
-    output_test = my_unet.predict(image)
-    output = np.reshape(output_test, (80, 160, 1))
-    plt.imshow(output)
-    plt.show()
 
 def prepare_dataset(train: list, labels: list, train_split: float = 0.8, batch_size=32):
 

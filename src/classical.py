@@ -20,12 +20,12 @@ def run_classical_pipeline():
     images = lane_detection_classical(image)
 
     # Add the ground truth image to the list of images
-    images.append(("Test Label", labels[int(sys.argv[1])]))
+    images.append(("Ground Truth", labels[int(sys.argv[1])]))
 
     # Plot results
     fig = plt.figure()
-    
-    for i, image_data in list(zip(range(1,len(images)), images)):
+
+    for i, image_data in list(zip(range(1,len(images) + 1), images)):
         title, image = image_data
         fig.add_subplot(1, len(images), i)
         plt.title(title)
