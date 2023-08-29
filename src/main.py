@@ -78,6 +78,22 @@ def main():
     plt.show()
 
 def prepare_dataset(train: list, labels: list, train_split: float = 0.8, batch_size=32):
+
+    """
+    Description:
+        Generates a separate train dataset and test dataset depending on the train split. Shuffle, split, and create batches.
+
+    Arguments:
+    1. train = list with all the training images.
+    2. labels = list of all the masks or labels for respective training images.
+    3. train_split = percentage of dataset that should be included in the train dataset. The remaining will make up the test dataset.
+    4. batch_size = the number of training images to be used together in one iteration.
+
+    Returns:
+    1. train_dataset = tf.data.Dataset object with the train images and labels.
+    2. test_dataset = tf.data.Dataset object with the test images and labels.
+    """
+
     num_elements = len(train)
     dataset: tf.data.Dataset = tf.data.Dataset.from_tensor_slices((tf.convert_to_tensor(train), tf.convert_to_tensor(labels)))
     dataset = dataset.shuffle(num_elements)
@@ -90,6 +106,7 @@ def prepare_dataset(train: list, labels: list, train_split: float = 0.8, batch_s
     return train_dataset, test_dataset
 
 def train_model(model: UNET, train_dataset: tf.data.Dataset, test_dataset: tf.data.Dataset):
+
     """
     Description:
         Trains the UNET model and saves a weights file and a keras model folder which can be used for predicting.
@@ -128,7 +145,10 @@ def train_model(model: UNET, train_dataset: tf.data.Dataset, test_dataset: tf.da
 
 # Lane finding Pipeline
 def lane_detection_pipeline_opencv(image):
-    
+    """
+    Description: 
+        The whole pipeline for detecting lanes using classical approaches with opencv.
+    """
     gray_image = grayscale(image)
     smoothed_image = gaussian_blur(image = gray_image, kernel_size = 5)
     canny_image = canny(image = smoothed_image, low_thresh = 180, high_thresh = 240)
