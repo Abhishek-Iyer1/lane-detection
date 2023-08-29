@@ -9,20 +9,45 @@ from keras import Model
 from keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
 from sklearn.model_selection import train_test_split
 from tensorflow.python.client import device_lib
+from sklearn.metrics import classification_report, confusion_matrix
 
 def main():
+
+    gpus = tf.config.list_physical_devices('GPU')
+    if gpus:
+        # Restrict TensorFlow to only allocate 1GB of memory on the first GPU
+        try:
+            tf.config.set_logical_device_configuration(
+                gpus[0],
+                [tf.config.LogicalDeviceConfiguration(memory_limit=15372)])
+            logical_gpus = tf.config.list_logical_devices('GPU')
+            print(len(gpus), "Physical GPUs,", len(logical_gpus), "Logical GPUs")
+        except RuntimeError as e:
+            # Virtual devices must be set before GPUs have been initialized
+            print(e)
+
     # Load train and test data
-    train: list = pickle.load(open("data/full_CNN_train.p", 'rb'))
-    labels: list = pickle.load(open("data/full_CNN_labels.p", 'rb'))
+    train = np.array(pickle.load(open("data/full_CNN_train.p", 'rb')))
+    labels = np.array(pickle.load(open("data/full_CNN_labels.p", 'rb')))
 
     # Find image number as given through cli from train data
     image = train[int(sys.argv[1])]
 
-    # Run lane detection pipeline on the image
-    images = lane_detection_pipeline_opencv(image)
+    train = train[0:6000]
+    labels = labels[0:6000]
+    # Reshape and Normalize training data
+    train = np.reshape(train, (-1, 80, 160, 3)) / 255
+    labels = np.reshape(labels, (-1, 80, 160, 1)) / 255
 
-    # Add the ground truth image to the list of images
-    images.append(("Test Label", labels[int(sys.argv[1])]))
+    train_dataset, test_dataset = prepare_dataset(train, labels, batch_size=32)
+
+    print(f"Normalized: {train.shape, labels.shape, train[60][50][50][0]}")
+
+    # # Run lane detection pipeline on the image
+    # images = lane_detection_pipeline_opencv(image)
+
+    # # Add the ground truth image to the list of images
+    # images.append(("Test Label", labels[int(sys.argv[1])]))
 
     # # Plot results
     # fig = plt.figure()
@@ -36,9 +61,20 @@ def main():
 
     # plt.show()
 
-    my_unet = UNET(input_shape=image.shape, trainable=True, start_filters=16, name="trial unet")
-    my_unet.model.summary()
-    train_model(my_unet, x_data=train, y_data=labels)
+    # Training
+    # my_unet = UNET(input_shape=image.shape, trainable=True, start_filters=16, name="trial unet")
+    # my_unet.model.summary()
+    # history = train_model(my_unet, train_dataset=train_dataset, test_dataset=test_dataset)
+    # my_unet.model.save_weights("unet_weights.h5")
+
+    # Prediction
+    my_unet: Model = tf.keras.models.load_model('keras.model')
+    image = np.reshape(image, [1, 80, 160, 3])
+    output_test = my_unet.predict(image)
+    output = np.reshape(output_test, (80, 160, 1))
+    plt.imshow(output)
+    plt.show()
+
     # image = train[5]
     # image = np.reshape(image, [1, 80, 160, 3])
     # print(f"Image Shape: {image.shape}")
@@ -48,34 +84,70 @@ def main():
     # plt.imshow(output)
     # plt.show()
 
-def train_model(model: UNET, x_data: list, y_data: list):
-    
+def prepare_dataset(train: list, labels: list, train_split: float = 0.8, batch_size=32):
+    num_elements = len(train)
+    dataset: tf.data.Dataset = tf.data.Dataset.from_tensor_slices((tf.convert_to_tensor(train), tf.convert_to_tensor(labels)))
+    dataset = dataset.shuffle(num_elements)
+    train_size = int(train_split * num_elements)
+    test_size = num_elements - train_size
+    train_dataset = dataset.skip(test_size)
+    test_dataset = dataset.take(test_size)
+    train_dataset = train_dataset.batch(batch_size)
+    test_dataset = test_dataset.batch(1)
+    return train_dataset, test_dataset
+
+def train_model(model: UNET, train_dataset: tf.data.Dataset, test_dataset: tf.data.Dataset):
+    """
+    Description:
+        Trains the UNET model and saves a weights file and a keras model folder which can be used for predicting.
+        
+    Arguments:
+    1. model = instance of class UNET
+    2. x_data = np array of all image training data
+    3. y_data = np array of all segmented masks or label corresponding to the image training data
+
+    Returns:
+        None.
+        
+    NOTE: keras model folder saved in local directory and a weights file saved as well to save progress.
+    """
+
     # Check for GPU
     print(tf.config.list_physical_devices('GPU'))
     print(get_available_devices())
 
-    x_train, x_test, y_train, y_test = train_test_split(np.array(x_data).reshape(-1, 80, 160, 3), np.array(y_data).reshape(-1, 80, 160, 1), train_size=0.8, test_size=0.2)
-    # x_train = 
-    # y_train = 
-    # validation_data = 
+    # tf.data.Dataset approach
+
+    # Indices approach
+    # shuffle_indices = np.random.permutation(x_data.shape[0])
+    # train_indices, valid_indices= train_test_split(shuffle_indices, test_size=0.2, random_state=42, shuffle=False)
+    # print(f"Length of Shuffle Indices: {len(shuffle_indices)}\nLength of Train Indices: {len(train_indices)}\nLength of Labels Indices: {len(valid_indices)}")
+
+    # Classic approach
+    # x_train, x_test, y_train, y_test = train_test_split(x_data, y_data, train_size=0.8, test_size=0.2)
+    # print(x_train.shape, x_test.shape, y_train.shape, y_test.shape)
 
     early_stopping = EarlyStopping(patience=10, verbose=1)
-    model_checkpoint = ModelCheckpoint("./keras.model", save_best_only=True, verbose=1)
-    reduce_lr = ReduceLROnPlateau(factor=0.1, patience=5, min_lr=0.00001, verbose=1)
+    model_checkpoint = ModelCheckpoint("./keras.model", verbose=1)
+    reduce_lr = ReduceLROnPlateau(factor=0.1, patience=2, min_lr=0.00001, verbose=1)
     
-    batch_size = 32
     epochs = 200
     callbacks = [early_stopping, model_checkpoint, reduce_lr]
-    validation_data = [x_test, y_test]
-    # model.train_model(x_train=x_train, 
-    #                   y_train=y_train, 
-    #                   validation_data=validation_data, 
-    #                   batch_size=batch_size, 
-    #                   epochs=epochs, 
-    #                   callbacks=callbacks, 
-    #                   optimizer="adam", 
-    #                   loss="binary_crossentropy", 
-    #                   metrics=["accuracy"])
+    loss = "binary_crossentropy"
+    optimizer="adam"
+    metrics=["accuracy"]
+    # print(f"{len(x_data[train_indices]), len(x_data[valid_indices]), len(y_data[train_indices]), len(y_data[valid_indices])}")
+    model.model.compile(loss=loss, optimizer=optimizer, metrics=metrics)
+    if model.trainable:
+        history = model.model.fit(
+                    train_dataset,
+                    validation_data=test_dataset,
+                    epochs=epochs,
+                    callbacks=callbacks
+                )
+        return history
+    else:
+        raise ValueError (f"smodel.trainable value is {model.trainable}. Please set the value to True in order to train the model.")
 
 def get_available_devices():
     local_device_protos = device_lib.list_local_devices()
