@@ -26,4 +26,4 @@ In this repository, we are aiming to explore traditional and smart ways to segme
 ## Difficulties
 * The classical pipeline struggles to adjust to different times of the day, curvature in lanes, and different colours of the lanes themselves.
 * Facing issues to integrate checks for local GPU and use it for training models.
-* Only able to load 6k images from the dataset.
+* Only able to load 6k images from the dataset. Need to figure out if custom dataset generator will be able to solve memory related issues. 
