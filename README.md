@@ -20,6 +20,8 @@ In this repository, we are aiming to explore traditional and smart ways to segme
 * Load dataset (training images and labels)
 * Normalise the dataset, reshape it as per input of model
 * Shuffle, split and make batches
+* Create an instance of the model, pass hyperparameters, train on the train split of the dataset
+* Save weights and model
 
 ## Difficulties
 * The classical pipeline struggles to adjust to different times of the day, curvature in lanes, and different colours of the lanes themselves.
