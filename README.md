@@ -17,6 +17,9 @@ In this repository, we are aiming to explore traditional and smart ways to segme
 * Images of Input, Grayscale, after Canny, after masking, and after hough transform to be added for visualising the steps of the pipeline.
 
 ## Deep Learning Pipeline
+* Load dataset (training images and labels)
+* Normalise the dataset, reshape it as per input of model
+* Shuffle, split and make batches
 
 ## Difficulties
 * The classical pipeline struggles to adjust to different times of the day, curvature in lanes, and different colours of the lanes themselves.
