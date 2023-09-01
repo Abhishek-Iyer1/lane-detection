@@ -22,6 +22,8 @@ In this repository, we are aiming to explore traditional and smart ways to segme
 * Shuffle, split and make batches
 * Create an instance of the model, pass hyperparameters, train on the train split of the dataset
 * Save weights and model
+* Test on images and on videos for performance comparison across different environment settings. 
+* Output IoU (Intersection over Union) for prediction of input image and test split of the dataset to generate data on model performance
 
 ## Difficulties
 * The classical pipeline struggles to adjust to different times of the day, curvature in lanes, and different colours of the lanes themselves.
