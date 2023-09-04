@@ -23,7 +23,7 @@ def predict_lanes():
     prediction = my_unet.predict(image_reshaped)
     prediction = np.reshape(prediction, (80, 160, 1))
 
-    # Binarize values to calculat IoU
+    # Binarize values to calculate IoU
     prediction = prediction.round()
     ground_truth = ground_truth.round()
 
