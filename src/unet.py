@@ -104,36 +104,3 @@ class UNET():
         output_layer = Conv2D(1, (1,1), padding="same", activation="sigmoid")(uconv1)
         
         return output_layer
-    
-    # def train_model(self, train_generator, validation_generator, batch_size: int, epochs: int, callbacks: list, optimizer: str, loss: str, metrics: list[str]=["accuracy"]):
-    #     """
-    #     Description:
-    #         Uses given arguments as parameters to train the model on train_data. 
-
-    #     Arguments:
-    #     1. x_train= Numpy array of training data
-    #     2. y_train= Numpy array of training labels
-    #     3. validation_data = [x_valid, y_valid] List of validation data and validation labels
-    #     4. batch_size = Number of samples for gradient upate.
-    #     5. epochs = Number of itrations to train over the training data
-    #     6. optimizer= The type of optimizer to use while training the model.
-    #     2. loss= The type of loss to use for training the model. 
-    #     3. metrics = List of metrics to be evaluated during the training and testing of the model.
-
-    #     Note: See Keras documentation for model.compile() for more information.
-      
-    #     Returns:
-    #         history = Returns a history object which keeps track of all the metrics for each epoch trained.
-    #     """
-    #     self.model.compile(loss=loss, optimizer=optimizer, metrics=metrics)
-
-    #     if self.trainable:
-    #         history = self.model.fit(
-    #             train_generator,
-    #             validation_data=validation_generator(),
-    #             epochs=epochs,
-    #             callbacks=callbacks
-    #         )
-    #         return history
-    #     else:
-    #         raise ValueError (f"self.trainable value is {self.trainable}. Please set the value to True in order to train the model.")

@@ -7,8 +7,8 @@ from src.classical_utils import *
 from unet import UNET
 from keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
 from keras.callbacks import History
-def main():
 
+def training_pipeline():
     # Check for existing GPUs
     gpus = tf.config.list_physical_devices('GPU')
     if gpus:
@@ -130,5 +130,5 @@ def train_model(model: UNET, train_dataset: tf.data.Dataset, test_dataset: tf.da
         raise ValueError (f"smodel.trainable value is {model.trainable}. Please set the value to True in order to train the model.")
 
 if __name__ == '__main__':
-    main()
+    training_pipeline()
 
