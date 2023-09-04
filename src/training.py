@@ -29,6 +29,7 @@ def training_pipeline():
     labels = np.array(pickle.load(open("data/full_CNN_labels.p", 'rb')))
 
     # Train on subset of the dataset due to memory limitations
+    # NOTE: If the number of training images is changed, this must also be reflected in performance_analysis.ipynb
     train = train[0:6000]
     labels = labels[0:6000]
 
