@@ -26,11 +26,13 @@ In this repository, we are aiming to explore traditional and smart ways to segme
 * Test on test images
 * Test real-time performance by applying to a 30 FPS video
 
+![Lanes drawn in on a normal difficulty driving clip](https://github.com/Abhishek-Iyer1/lane-detection/blob/main/tests/normal_video_predicted.mp4 "Lanes drawn in on a normal difficulty driving clip")
 
-https://github.com/Abhishek-Iyer1/lane-detection/blob/main/tests/normal_video_predicted.mp4
-
+<video width="320" height="240" controls>
+  <source src="https://github.com/Abhishek-Iyer1/lane-detection/blob/main/tests/normal_video_predicted.mp4" type="video/mp4">
+</video>
 
 ## Difficulties
 * The classical pipeline struggles to adjust to different times of the day, curvature in lanes, and different colours of the lanes themselves.
-* Facing issues to integrate checks for local GPU and use it for training models.
-* Only able to load 6k images from the dataset. Need to figure out if custom dataset generator will be able to solve memory related issues. 
+* Only able to load 6k images from the dataset. Need to figure out if custom dataset generator will be able to solve memory related issues.
+* The deep learning approach suffers from detection issues when harsh sunlight causes overexposure of lanes, or camera flashes. Apart from sudden changes inbrightness, it appears, extreme bends in roads are not predicted well. This could be from lack of samples in the training set. 
