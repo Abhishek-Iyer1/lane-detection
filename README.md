@@ -1,20 +1,15 @@
 # lane-detection
 
-In this repository, we are aiming to explore traditional and smart ways to segment and detect lanes to assist with automated driving.
+In this repository, we are aiming to explore traditional and smart ways to segment and detect lanes to assist with automated driving. We will be using a deep learning approach involving a UNET to detect and segment the current driving lane.
 
-## Traditional Approach Pipeline
+## Classical Approach Pipeline
 * Convert the image to grayscale
 * Using thresholding to see as a baseline to see what percentage of the lanes we can already detect
 * Cropping the image and creating an area of interest mask to focus our attention, since mounted cameras can be assumed to have approximately the same position.
 * Using the Canny edge detection technique and tuning its parameters to get the best output within our area of interest
 * Using Hough transform to detect line segments.
 
-## Testing performance
-* Test on test images
-* Test real-time performance by applying to a 30 FPS video
-
-## Displaying Outputs
-* Images of Input, Grayscale, after Canny, after masking, and after hough transform to be added for visualising the steps of the pipeline.
+![Outputs of all steps of the classical approach](images/classical_pipeline.png "Output from classical pipeline")
 
 ## Deep Learning Pipeline
 * Load dataset (training images and labels)
@@ -24,6 +19,18 @@ In this repository, we are aiming to explore traditional and smart ways to segme
 * Save weights and model
 * Test on images and on videos for performance comparison across different environment settings. 
 * Output IoU (Intersection over Union) for prediction of input image and test split of the dataset to generate data on model performance
+
+![Prediction of the deep learning approach](images/unet_predictions.png "Output from deep learning pipeline")
+
+## Testing performance
+* Test on test images
+* Test real-time performance by applying to a 30 FPS video
+
+![Lanes drawn in on a normal difficulty driving clip](tests/normal_video_predicted.mp4 "Lanes drawn in on a normal difficulty driving clip")
+
+<video width="320" height="240" controls>
+  <source src="tests/normal_video_predicted.mp4" type="video/mp4">
+</video>
 
 ## Difficulties
 * The classical pipeline struggles to adjust to different times of the day, curvature in lanes, and different colours of the lanes themselves.
