@@ -31,7 +31,7 @@ In this repository, we are aiming to explore traditional and smart ways to segme
 <b>Normal Difficulty Video </b>
 
 <video width="320" height="240" controls>
-  <source src="tests/normal_video_predicted.mp4" type="video/mp4">
+  <source src="https://github.com/Abhishek-Iyer1/lane-detection/blob/main/tests/normal_video_predicted.mp4" type="video/mp4">
 </video>
 
 <hr>
@@ -39,7 +39,7 @@ In this repository, we are aiming to explore traditional and smart ways to segme
 <b> Harder Difficulty Video </b>
 
 <video width="320" height="240" controls>
-  <source src="tests/challenge_video_predicted.mp4" type="video/mp4">
+  <source src="https://github.com/Abhishek-Iyer1/lane-detection/blob/main/tests/challenge_video_predicted.mp4" type="video/mp4">
 </video>
 
 <hr>
@@ -47,7 +47,7 @@ In this repository, we are aiming to explore traditional and smart ways to segme
 <b> Challenging Difficulty Video </b>
 
 <video width="320" height="240" controls>
-  <source src="tests/harder_challenge_predicted.mp4" type="video/mp4">
+  <source src="https://github.com/Abhishek-Iyer1/lane-detection/blob/main/tests/harder_challenge_predicted.mp4" type="video/mp4">
 </video>
 
 
