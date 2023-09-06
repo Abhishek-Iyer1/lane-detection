@@ -26,13 +26,57 @@ In this repository, we are aiming to explore traditional and smart ways to segme
 * Test on test images
 * Test real-time performance by applying to a 30 FPS video
 
-![Lanes drawn in on a normal difficulty driving clip](https://github.com/Abhishek-Iyer1/lane-detection/blob/main/tests/normal_video_predicted.mp4 "Lanes drawn in on a normal difficulty driving clip")
+## Video Demo
+
+<b>Normal Difficulty Video </b>
 
 <video width="320" height="240" controls>
-  <source src="https://github.com/Abhishek-Iyer1/lane-detection/blob/main/tests/normal_video_predicted.mp4" type="video/mp4">
+  <source src="tests/normal_video_predicted.mp4" type="video/mp4">
 </video>
+
+<hr>
+
+<b> Harder Difficulty Video </b>
+
+<video width="320" height="240" controls>
+  <source src="tests/challenge_video_predicted.mp4" type="video/mp4">
+</video>
+
+<hr>
+
+<b> Challenging Difficulty Video </b>
+
+<video width="320" height="240" controls>
+  <source src="tests/harder_challenge_predicted.mp4" type="video/mp4">
+</video>
+
 
 ## Difficulties
 * The classical pipeline struggles to adjust to different times of the day, curvature in lanes, and different colours of the lanes themselves.
 * Only able to load 6k images from the dataset. Need to figure out if custom dataset generator will be able to solve memory related issues.
 * The deep learning approach suffers from detection issues when harsh sunlight causes overexposure of lanes, or camera flashes. Apart from sudden changes inbrightness, it appears, extreme bends in roads are not predicted well. This could be from lack of samples in the training set. 
+
+## Installation
+
+Clone the repository into your workspace and create a new environment with python version 3.9. My preferred way of doing this is using Mamba.
+
+```
+mamba create -n <name_of_environment> python=3.9
+```
+
+After creating the environment, activate it
+
+```
+mamba activate <name_of_environment>
+```
+
+Install the dependencies from the requirements.txt
+```
+mamba install --file requirements.txt
+```
+
+If you face any issues with the download of the dependencies, download the ones that you can, install the rest using `pip install <package-name>`. After that you will need to make sure all the versions are compatible with each other.
+
+The dataset images can be found [here](https://www.dropbox.com/s/rrh8lrdclzlnxzv/full_CNN_train.p?dl=0) and the labels can be found [here](https://www.dropbox.com/s/ak850zqqfy6ily0/full_CNN_labels.p?dl=0).
+
+NOTE: To run the training of the model on your local GPU, you will have to find the instructions specific to your GPU and install the relevant drivers and packages.
