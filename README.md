@@ -26,7 +26,9 @@ In this repository, we are aiming to explore traditional and smart ways to segme
 * Test on test images
 * Test real-time performance by applying to a 30 FPS video
 
+
 https://github.com/Abhishek-Iyer1/lane-detection/blob/main/tests/normal_video_predicted.mp4
+
 
 ## Difficulties
 * The classical pipeline struggles to adjust to different times of the day, curvature in lanes, and different colours of the lanes themselves.
